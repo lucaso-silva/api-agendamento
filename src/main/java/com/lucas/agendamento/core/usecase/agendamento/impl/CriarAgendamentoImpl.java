@@ -1,8 +1,8 @@
 package com.lucas.agendamento.core.usecase.agendamento.impl;
 
 import com.lucas.agendamento.core.domain.Agendamento;
-import com.lucas.agendamento.core.dto.agendamento.CriarAgendamentoInput;
-import com.lucas.agendamento.core.dto.agendamento.CriarAgendamentoOutput;
+import com.lucas.agendamento.core.dto.agendamento.NovoAgendamentoInput;
+import com.lucas.agendamento.core.dto.agendamento.AgendamentoOutput;
 import com.lucas.agendamento.core.exception.ConflitoAgendamentoException;
 import com.lucas.agendamento.core.exception.DataInvalidaException;
 import com.lucas.agendamento.core.exception.PacienteNotFoundException;
@@ -26,7 +26,7 @@ public class CriarAgendamentoImpl implements CriarAgendamento {
     private final ProfissionalGateway profissionalGateway;
 
     @Override
-    public CriarAgendamentoOutput criar(CriarAgendamentoInput input) {
+    public AgendamentoOutput criar(NovoAgendamentoInput input) {
 
         validaDataAgendamento(input.profissionalId(), input.dataConsulta());
         var paciente = pacienteGateway.buscarPorId(input.pacienteId())
@@ -39,7 +39,7 @@ public class CriarAgendamentoImpl implements CriarAgendamento {
                 input.dataConsulta(),
                 input.tipo());
 
-        return CriarAgendamentoOutput.from(agendamentoGateway.salvar(novoAgendamento));
+        return AgendamentoOutput.from(agendamentoGateway.salvar(novoAgendamento));
     }
 
     private void validaDataAgendamento(Long profissionalId, LocalDateTime dataAgendamento) {

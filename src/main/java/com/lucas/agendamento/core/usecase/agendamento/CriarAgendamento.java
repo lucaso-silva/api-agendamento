@@ -1,8 +1,8 @@
 package com.lucas.agendamento.core.usecase.agendamento;
 
-import com.lucas.agendamento.core.dto.agendamento.CriarAgendamentoInput;
-import com.lucas.agendamento.core.dto.agendamento.CriarAgendamentoOutput;
+import com.lucas.agendamento.core.dto.agendamento.NovoAgendamentoInput;
+import com.lucas.agendamento.core.dto.agendamento.AgendamentoOutput;
 
 public interface CriarAgendamento {
-    CriarAgendamentoOutput criar(CriarAgendamentoInput input);
+    AgendamentoOutput criar(NovoAgendamentoInput input);
 }
