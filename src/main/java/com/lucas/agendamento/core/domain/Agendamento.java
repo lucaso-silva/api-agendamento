@@ -1,9 +1,12 @@
 package com.lucas.agendamento.core.domain;
 
+import com.lucas.agendamento.core.domain.exception.AgendamentoCanceladoException;
 import com.lucas.agendamento.core.domain.exception.RequiredFieldException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+
+import static com.lucas.agendamento.core.domain.StatusAgendamento.*;
 
 @Getter
 public class Agendamento {
@@ -25,7 +28,7 @@ public class Agendamento {
         this.profissional = profissional;
         setDataConsulta(dataConsulta);
         setTipo(tipo);
-        this.status = StatusAgendamento.AGENDADO;
+        this.status = AGENDADO;
         this.motivoCancelamento = null;
     }
 
@@ -70,11 +73,14 @@ public class Agendamento {
         this.tipo = tipo;
     }
 
-    private void cancelarConsulta(String motivoCancelamento) {
+    public void cancelarAgendamento(String motivoCancelamento) {
+        if(this.status == CANCELADO){
+            throw new AgendamentoCanceladoException("Agendamento encontra-se cancelado");
+        }
         if(motivoCancelamento == null || motivoCancelamento.isBlank()){
             throw new RequiredFieldException("Motivo do cancelamento deve ser informado");
         }
-        this.status = StatusAgendamento.CANCELADO;
+        this.status = CANCELADO;
         this.motivoCancelamento = motivoCancelamento;
     }
 }
