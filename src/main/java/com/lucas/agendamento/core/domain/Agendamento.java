@@ -6,19 +6,20 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.lucas.agendamento.core.domain.StatusAgendamento.*;
+import static com.lucas.agendamento.core.domain.StatusAgendamento.AGENDADO;
+import static com.lucas.agendamento.core.domain.StatusAgendamento.CANCELADO;
 
 @Getter
 public class Agendamento {
     private Long id;
     private Paciente paciente;
     private Profissional profissional;
-    private LocalDateTime dataConsulta;
+    private LocalDateTime dataAgendamento;
     private TipoAtendimento tipo;
     private StatusAgendamento status;
     private String motivoCancelamento;
 
-    private Agendamento(Paciente paciente, Profissional profissional, LocalDateTime dataConsulta, TipoAtendimento tipo) {
+    private Agendamento(Paciente paciente, Profissional profissional, LocalDateTime dataAgendamento, TipoAtendimento tipo) {
         if(paciente == null || profissional == null){
             throw new RequiredFieldException("Paciente e profissional devem ser informados");
         }
@@ -26,13 +27,13 @@ public class Agendamento {
         this.id = null;
         this.paciente = paciente;
         this.profissional = profissional;
-        setDataConsulta(dataConsulta);
+        setDataAgendamento(dataAgendamento);
         setTipo(tipo);
         this.status = AGENDADO;
         this.motivoCancelamento = null;
     }
 
-    private Agendamento(Long id, Paciente paciente, Profissional profissional, LocalDateTime dataConsulta, TipoAtendimento tipo, StatusAgendamento status, String motivoCancelamento) {
+    private Agendamento(Long id, Paciente paciente, Profissional profissional, LocalDateTime dataAgendamento, TipoAtendimento tipo, StatusAgendamento status, String motivoCancelamento) {
         if(id == null || id < 1){
             throw new RequiredFieldException("id deve ser informado");
         }
@@ -45,7 +46,7 @@ public class Agendamento {
         this.id = id;
         this.paciente = paciente;
         this.profissional = profissional;
-        setDataConsulta(dataConsulta);
+        setDataAgendamento(dataAgendamento);
         setTipo(tipo);
         this.status = status;
         this.motivoCancelamento = motivoCancelamento;
@@ -59,11 +60,11 @@ public class Agendamento {
         return new Agendamento(id, paciente, profissional, dataConsulta, tipo, status, motivoCancelamento);
     }
 
-    private void setDataConsulta(LocalDateTime dataConsulta) {
-        if(dataConsulta == null){
+    private void setDataAgendamento(LocalDateTime dataAgendamento) {
+        if(dataAgendamento == null){
             throw new RequiredFieldException("Data do agendamento deve ser informado");
         }
-        this.dataConsulta = dataConsulta;
+        this.dataAgendamento = dataAgendamento;
     }
 
     private void setTipo(TipoAtendimento tipo) {

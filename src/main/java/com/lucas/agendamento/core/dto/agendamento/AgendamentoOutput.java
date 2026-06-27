@@ -14,7 +14,7 @@ public record AgendamentoOutput(Long idAgendamento,
         return new AgendamentoOutput(agendamento.getId(),
                 agendamento.getPaciente().getNome(),
                 agendamento.getProfissional().getNome(),
-                agendamento.getDataConsulta(),
+                agendamento.getDataAgendamento(),
                 agendamento.getStatus());
     }
 }
