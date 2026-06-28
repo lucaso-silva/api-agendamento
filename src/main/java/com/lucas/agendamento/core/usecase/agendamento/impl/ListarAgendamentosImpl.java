@@ -1,6 +1,7 @@
 package com.lucas.agendamento.core.usecase.agendamento.impl;
 
 import com.lucas.agendamento.core.dto.agendamento.AgendamentoOutput;
+import com.lucas.agendamento.core.usecase.agendamento.FiltroBusca;
 import com.lucas.agendamento.core.gateway.AgendamentoGateway;
 import com.lucas.agendamento.core.usecase.agendamento.ListarAgendamentos;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,8 @@ public class ListarAgendamentosImpl implements ListarAgendamentos {
     private final AgendamentoGateway agendamentoGateway;
 
     @Override
-    public List<AgendamentoOutput> listar() {
-        return agendamentoGateway.listar().stream()
+    public List<AgendamentoOutput> listar(FiltroBusca filtro) {
+        return agendamentoGateway.listar(filtro).stream()
                 .map(AgendamentoOutput::from)
                 .toList();
     }

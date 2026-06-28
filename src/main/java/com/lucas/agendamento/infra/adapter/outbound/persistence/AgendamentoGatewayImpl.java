@@ -1,6 +1,7 @@
 package com.lucas.agendamento.infra.adapter.outbound.persistence;
 
 import com.lucas.agendamento.core.domain.Agendamento;
+import com.lucas.agendamento.core.usecase.agendamento.FiltroBusca;
 import com.lucas.agendamento.core.gateway.AgendamentoGateway;
 import com.lucas.agendamento.infra.adapter.outbound.persistence.mapper.AgendamentoMapper;
 import com.lucas.agendamento.infra.adapter.outbound.persistence.repository.AgendamentoRepository;
@@ -25,8 +26,12 @@ public class AgendamentoGatewayImpl implements AgendamentoGateway {
     }
 
     @Override
-    public List<Agendamento> listar() {
-        return agendamentoRepository.findAll().stream()
+    public List<Agendamento> listar(FiltroBusca filtro) {
+        var paciente = filtro.paciente() == null ? null : "%"+filtro.paciente().trim().toLowerCase()+"%";
+        var profissional = filtro.profissional() == null ? null : "%"+filtro.profissional().trim().toLowerCase()+"%";
+
+        return agendamentoRepository.buscar(paciente,profissional,filtro.status())
+                .stream()
                 .map(AgendamentoMapper::toDomain)
                 .toList();
     }

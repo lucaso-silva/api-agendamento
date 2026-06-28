@@ -1,6 +1,8 @@
 package com.lucas.agendamento.infra.adapter.inbound.rest;
 
+import com.lucas.agendamento.core.domain.StatusAgendamento;
 import com.lucas.agendamento.core.dto.agendamento.AgendamentoOutput;
+import com.lucas.agendamento.core.usecase.agendamento.FiltroBusca;
 import com.lucas.agendamento.core.dto.agendamento.NovoAgendamentoInput;
 import com.lucas.agendamento.core.usecase.agendamento.CancelarAgendamento;
 import com.lucas.agendamento.core.usecase.agendamento.CriarAgendamento;
@@ -31,8 +33,12 @@ public class AgendamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AgendamentoOutput>> listar(){
-        return ResponseEntity.ok(listarAgendamentos.listar());
+    public ResponseEntity<List<AgendamentoOutput>> listar(@RequestParam(name="paciente", required = false)String paciente,
+                                                          @RequestParam(name = "profissional", required = false) String profissional,
+                                                          @RequestParam(name = "status", required = false) String status){
+
+        var filtro = new FiltroBusca(paciente, profissional, StatusAgendamento.from(status));
+        return ResponseEntity.ok(listarAgendamentos.listar(filtro));
     }
 
     @PatchMapping("/{agendamentoId}/cancelamento")
