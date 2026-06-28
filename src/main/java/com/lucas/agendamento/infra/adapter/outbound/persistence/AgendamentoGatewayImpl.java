@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.lucas.agendamento.core.domain.StatusAgendamento.AGENDADO;
+
 @Repository
 @AllArgsConstructor
 public class AgendamentoGatewayImpl implements AgendamentoGateway {
@@ -37,6 +39,6 @@ public class AgendamentoGatewayImpl implements AgendamentoGateway {
 
     @Override
     public boolean haConflitoDeAgenda(Long profissionalId, LocalDateTime dataAgendamento) {
-        return agendamentoRepository.existsByProfissional_IdAndDataAgendamento(profissionalId, dataAgendamento);
+        return agendamentoRepository.existsByProfissional_IdAndDataAgendamentoAndStatus(profissionalId,dataAgendamento,AGENDADO);
     }
 }

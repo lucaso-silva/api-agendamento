@@ -4,7 +4,7 @@ VALUES('João da Silva', '8133001122', '12345678910'),
 
 INSERT INTO profissionais (nome, telefone, tipo)
 VALUES('Dr. Pedro Correia', '8133112233', 'MEDICO'),
-      ('Dra. Ana Souza', '8133223344	', 'FISIOTERAPEUTA');
+      ('Dra. Ana Souza', '8133223344', 'FISIOTERAPEUTA');
 
 INSERT INTO agendamentos (paciente_id, profissional_id, data_agendamento, tipo_atendimento, status, motivo_cancelamento)
 VALUES(1, 1, '2026-07-10 09:00:00', 'INICIAL', 'AGENDADO', NULL),
