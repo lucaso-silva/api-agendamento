@@ -12,4 +12,6 @@ public interface PacienteGateway {
     List<Paciente> listarPacientes();
 
     Optional<Paciente> buscarPorId(Long id);
+
+    boolean existeCarteirinhaId(String carteirinhaId);
 }
