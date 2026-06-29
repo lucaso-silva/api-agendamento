@@ -1,4 +1,4 @@
-package com.lucas.agendamento.infra.adapter.inbound.rest;
+package com.lucas.agendamento.infra.adapter.inbound.rest.controller;
 
 import com.lucas.agendamento.core.domain.StatusAgendamento;
 import com.lucas.agendamento.core.dto.agendamento.AgendamentoOutput;

@@ -1,4 +1,4 @@
-package com.lucas.agendamento.infra.adapter.inbound.rest;
+package com.lucas.agendamento.infra.adapter.inbound.rest.controller;
 
 import com.lucas.agendamento.core.dto.paciente.NovoPacienteInput;
 import com.lucas.agendamento.core.dto.paciente.PacienteOutput;
