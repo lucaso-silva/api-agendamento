@@ -17,6 +17,7 @@ O projeto foi desenvolvido com foco em boas práticas de desenvolvimento, regras
 * SpringDoc OpenAPI (Swagger)
 * JUnit 5
 * Mockito
+* Testcontainers
 * Maven
 * Lombok
 
@@ -308,25 +309,39 @@ Exemplo:
 
 ## Testes
 
-Foram desenvolvidos testes unitários utilizando:
+* Regras de negócio são verificadas por testes unitários com JUnit 5 e Mockito. 
+* Testes de integração validam a inicialização da aplicação, as migrations e a persistência de dados com Spring, Flyway e PostgreSQL.
 
-* JUnit 5
-* Mockito
+### Banco de dados dos testes
 
-Os testes cobrem principalmente as regras de negócio da aplicação de agendamentos.
+Os testes de integração utilizam **Testcontainers** para iniciar uma instância temporária do PostgreSQL 16 em um container Docker. O Flyway aplica as migrations nesse banco, e os testes verificam a inicialização do contexto,  as migrations e a persistência de um paciente.
 
-Para executar:
+O banco de desenvolvimento não precisa estar preparado ou em execução para esses testes. O container é removido após sua execução.
 
-```bash
-mvn test
+**Pré-requisitos:** Java 21 e Docker em execução. 
+
+Na primeira execução, o Docker pode precisar baixar a imagem do PostgreSQL.
+
+Para executar todos os testes no Windows:
+
+```powershell
+.\mvnw.cmd test
 ```
+
+Para executar a verificação completa do projeto:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+No Linux ou macOS, use `./mvnw test` ou `./mvnw clean verify`.
 
 ---
 
 ## Possíveis Melhorias Futuras
 
 * Implementar autenticação e autorização.
-* Adicionar testes de integração.
+* Ampliar a cobertura de testes de integração.
 * Adicionar paginação nas consultas.
 * Implementar cadastro e gerenciamento de profissionais.
 
