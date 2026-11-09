@@ -17,6 +17,7 @@ public class AgendamentoMapper {
                 .dataAgendamento(agendamento.getDataAgendamento())
                 .tipo(agendamento.getTipo())
                 .status(agendamento.getStatus())
+                .motivoCancelamento(agendamento.getMotivoCancelamento())
                 .build();
     }
 
