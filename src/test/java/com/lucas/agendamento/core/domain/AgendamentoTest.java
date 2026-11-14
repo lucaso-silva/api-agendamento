@@ -33,12 +33,10 @@ class AgendamentoTest {
         agendamento.cancelarAgendamento(MOTIVO_CANCELAMENTO);
 
         assertEquals(StatusAgendamento.CANCELADO, agendamento.getStatus());
-
         assertThrows(
                 AgendamentoCanceladoException.class,
                 ()-> agendamento.cancelarAgendamento(MOTIVO_CANCELAMENTO)
         );
-
         assertEquals(StatusAgendamento.CANCELADO, agendamento.getStatus());
         assertEquals(MOTIVO_CANCELAMENTO, agendamento.getMotivoCancelamento());
     }
