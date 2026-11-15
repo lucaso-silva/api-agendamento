@@ -43,7 +43,7 @@ public interface AgendamentoApi {
 
     @Operation(
             summary = "Realizar cancelamento de um agendamento",
-            description = "Cancela um agendamento existente, registrando o motivo do cancelamento",
+            description = "Cancela um agendamento existente e registra o motivo para histórico. A resposta retorna o agendamento com status CANCELADO, mas não inclui o motivo do cancelamento.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Motivo do cancelamento", required = true)
     )
     @PatchMapping("/{agendamentoId}/cancelamento")

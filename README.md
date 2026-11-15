@@ -265,6 +265,8 @@ PATCH /api/agendamentos/1/cancelamento
 }
 ```
 
+O motivo do cancelamento é armazenado para histórico, mas não é retornado na resposta. A resposta contém os dados do agendamento com o status `CANCELADO`.
+
 ---
 
 ### Filtrar Agendamentos
