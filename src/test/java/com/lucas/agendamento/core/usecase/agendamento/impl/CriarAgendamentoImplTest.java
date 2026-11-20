@@ -1,4 +1,4 @@
-package com.lucas.agendamento.core.usecase.impl;
+package com.lucas.agendamento.core.usecase.agendamento.impl;
 
 import com.lucas.agendamento.core.domain.Agendamento;
 import com.lucas.agendamento.core.exception.ConflitoAgendamentoException;
@@ -8,7 +8,6 @@ import com.lucas.agendamento.core.exception.ProfissionalNotFoundException;
 import com.lucas.agendamento.core.gateway.AgendamentoGateway;
 import com.lucas.agendamento.core.gateway.PacienteGateway;
 import com.lucas.agendamento.core.gateway.ProfissionalGateway;
-import com.lucas.agendamento.core.usecase.agendamento.impl.CriarAgendamentoImpl;
 import com.lucas.agendamento.factory.AgendamentoFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.lucas.agendamento.core.usecase.impl;
+package com.lucas.agendamento.core.usecase.agendamento.impl;
 
 import com.lucas.agendamento.core.domain.Agendamento;
 import com.lucas.agendamento.core.domain.exception.AgendamentoCanceladoException;
