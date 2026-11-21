@@ -3,6 +3,8 @@ package com.lucas.agendamento.factory;
 import com.lucas.agendamento.core.domain.Paciente;
 import com.lucas.agendamento.core.dto.paciente.NovoPacienteInput;
 
+import java.util.List;
+
 public class PacienteFactory {
     private PacienteFactory(){}
 
@@ -22,8 +24,8 @@ public class PacienteFactory {
     }
 
     public static NovoPacienteInput pacienteInputSemCarteirinha(){
-        return new NovoPacienteInput("Joao da Silva",
-                "(81)3333-3333",
+        return new NovoPacienteInput("Maria Santana",
+                "(81)3333-4444",
                 null);
     }
 
@@ -35,4 +37,12 @@ public class PacienteFactory {
                 paciente.telefone(),
                 paciente.carteirinhaId());
     }
+
+    public static List<Paciente> listaPacientes() {
+        var pacienteUm = pacienteCarteirinha();
+        var pacienteDois = pacienteSemCarteirinha();
+
+        return List.of(pacienteUm, pacienteDois);
+    }
+
 }
