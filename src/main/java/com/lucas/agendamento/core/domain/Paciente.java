@@ -19,7 +19,7 @@ public class Paciente {
 
     private Paciente(Long id, String nome, String telefone, String carteirinhaId){
         if(id == null || id < 1 ){
-            throw new RequiredFieldException("id deve ser informado");
+            throw new RequiredFieldException("Id deve ser informado");
         }
         this.id = id;
         setNome(nome);
