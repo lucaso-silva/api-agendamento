@@ -46,12 +46,18 @@ O projeto foi desenvolvido com foco em boas práticas de desenvolvimento, regras
 ## Regras de Negócio Implementadas
 
 * Um profissional não pode possuir dois agendamentos no mesmo horário.
-* Não é permitido criar agendamentos em datas passadas.
+* A data e a hora de um novo agendamento devem ser estritamente posteriores à data e à hora atuais.
 * O cancelamento exige um motivo.
 * Ao cancelar um agendamento, o registro permanece armazenado no banco de dados.
 * Agendamentos cancelados não bloqueiam novos horários para o profissional.
 * Apenas pacientes e profissionais existentes podem ser utilizados no agendamento.
 * Não é permitido cadastro de pacientes com mesmo número de carteirinha. 
+
+### Data, hora e fuso dos agendamentos
+
+O campo `dataConsulta` representa uma data e hora local, sem offset ou fuso no valor enviado (por exemplo, `2026-07-20T09:00:00`). A API interpreta esse horário como horário de `America/Recife`. Para validar um novo agendamento, compara esse valor com a data e hora atuais nesse fuso; valores anteriores ou iguais são rejeitados. Essa configuração substitui o uso do fuso padrão da máquina e pode alterar o resultado em servidores que usavam outro fuso.
+
+A comparação no Java usa `LocalDateTime`, que permite frações de segundo até nanossegundos, sem truncamento explícito no caso de uso; a resolução efetiva do relógio do sistema pode ser menor. No PostgreSQL, a coluna `data_agendamento` é `TIMESTAMP` sem fuso, com precisão de até microssegundos. Assim, frações mais precisas podem ser arredondadas ao persistir, e o valor recuperado pode diferir do valor comparado em memória. O banco não armazena o fuso junto ao horário.
 
 ---
 

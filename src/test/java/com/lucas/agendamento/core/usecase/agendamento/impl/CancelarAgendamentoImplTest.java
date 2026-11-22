@@ -6,7 +6,6 @@ import com.lucas.agendamento.core.domain.exception.RequiredFieldException;
 import com.lucas.agendamento.core.dto.agendamento.MotivoCancelamentoInput;
 import com.lucas.agendamento.core.exception.AgendamentoNotFoundException;
 import com.lucas.agendamento.core.gateway.AgendamentoGateway;
-import com.lucas.agendamento.core.usecase.agendamento.impl.CancelarAgendamentoImpl;
 import com.lucas.agendamento.factory.AgendamentoFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.lucas.agendamento.core.domain.StatusAgendamento.CANCELADO;
@@ -30,9 +30,11 @@ class CancelarAgendamentoImplTest {
     @InjectMocks
     private CancelarAgendamentoImpl cancelarAgendamento;
 
+    private static final LocalDateTime DATA_AGENDAMENTO = LocalDateTime.of(2026,11,29,10,45);
+
     @Test
     void deveCancelarAgendamento(){
-        var agendamento = AgendamentoFactory.agendamento();
+        var agendamento = AgendamentoFactory.agendamento(DATA_AGENDAMENTO);
         var agendamentoId = agendamento.getId();
         var motivoCancelamento = "Paciente solicitou cancelamento";
 
@@ -89,7 +91,7 @@ class CancelarAgendamentoImplTest {
 
     @Test
     void deveLancarExcecaoQuandoAgendamentoJaCancelado(){
-        var agendamento = AgendamentoFactory.agendamento();
+        var agendamento = AgendamentoFactory.agendamento(DATA_AGENDAMENTO);
         var motivoCancelamento = "Paciente solicitou cancelamento";
         agendamento.cancelarAgendamento(motivoCancelamento);
         var agendamentoId = agendamento.getId();
@@ -109,7 +111,7 @@ class CancelarAgendamentoImplTest {
 
     @Test
     void deveLancarExcecaoQuandoMotivoForVazio(){
-        var agendamento = AgendamentoFactory.agendamento();
+        var agendamento = AgendamentoFactory.agendamento(DATA_AGENDAMENTO);
         var motivoCancelamentoInvalido = "";
         var agendamentoId = agendamento.getId();
 

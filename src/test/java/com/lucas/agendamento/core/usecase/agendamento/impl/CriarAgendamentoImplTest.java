@@ -9,13 +9,19 @@ import com.lucas.agendamento.core.gateway.AgendamentoGateway;
 import com.lucas.agendamento.core.gateway.PacienteGateway;
 import com.lucas.agendamento.core.gateway.ProfissionalGateway;
 import com.lucas.agendamento.factory.AgendamentoFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import static com.lucas.agendamento.core.domain.StatusAgendamento.AGENDADO;
@@ -32,18 +38,27 @@ class CriarAgendamentoImplTest {
     @Mock
     private ProfissionalGateway profissionalGateway;
 
-    @InjectMocks
+    private Clock clock;
     private CriarAgendamentoImpl criarAgendamento;
 
-    @Test
-    void deveCriarAgendamento(){
-        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput();
-        var agendamento = AgendamentoFactory.agendamento();
+    @BeforeEach
+    void setup(){
+        Instant fixedInstant = Instant.parse("2026-11-22T10:45:00Z");
+        clock = Clock.fixed(fixedInstant, ZoneId.of("UTC"));
+
+        criarAgendamento = new CriarAgendamentoImpl(agendamentoGateway, pacienteGateway, profissionalGateway, clock);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 604800}) //604800s = 7 dias
+    void deveCriarAgendamentoQuandoDataFutura(int valor){
+        var dataAgendamento = LocalDateTime.now(clock).plusSeconds(valor);
+        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
+        var agendamento = AgendamentoFactory.agendamento(dataAgendamento);
         var paciente = AgendamentoFactory.paciente();
         var profissional = AgendamentoFactory.medico();
         var pacienteId = paciente.getId();
         var profissionalId = profissional.getId();
-        var dataAgendamento = novoAgendamentoInput.dataConsulta();
 
         ArgumentCaptor<Agendamento> argumentoCaptor = ArgumentCaptor.forClass(Agendamento.class);
 
@@ -86,10 +101,10 @@ class CriarAgendamentoImplTest {
 
     @Test
     void deveLancarExcecaoQuandoPacienteNaoExiste(){
-        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput();
+        var dataAgendamento = LocalDateTime.now(clock).plusDays(7);
+        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
         var idPacienteInexistente = novoAgendamentoInput.pacienteId();
         var idProfissional = novoAgendamentoInput.profissionalId();
-        var dataAgendamento = novoAgendamentoInput.dataConsulta();
 
         when(pacienteGateway.buscarPorId(idPacienteInexistente))
                 .thenReturn(Optional.empty());
@@ -108,11 +123,11 @@ class CriarAgendamentoImplTest {
 
     @Test
     void deveLancarExcecaoQuandoProfissionalNaoExiste(){
-        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput();
+        var dataAgendamento = LocalDateTime.now(clock).plusDays(7);
+        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
         var idPaciente = novoAgendamentoInput.pacienteId();
         var paciente = AgendamentoFactory.paciente();
         var idProfissionalInexistente = novoAgendamentoInput.profissionalId();
-        var dataAgendamento = novoAgendamentoInput.dataConsulta();
 
         when(pacienteGateway.buscarPorId(idPaciente))
                 .thenReturn(Optional.of(paciente));
@@ -131,16 +146,18 @@ class CriarAgendamentoImplTest {
         verifyNoMoreInteractions(pacienteGateway, profissionalGateway, agendamentoGateway);
     }
 
-    @Test
-    void deveLancarExcecaoQuandoDataAgendamentoPassada(){
-        var agendamentoInputDataPassada = AgendamentoFactory.agendamentoInputDataPassada();
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 86400}) //86400s = 1 dia
+    void deveLancarExcecaoQuandoDataAgendamentoPassadaOuIgualDataAtual(int valor){
+        var dataAgendamento = LocalDateTime.now(clock).minusSeconds(valor);
+        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
 
         assertThrows(
                 DataInvalidaException.class,
-                ()->criarAgendamento.criar(agendamentoInputDataPassada)
+                ()->criarAgendamento.criar(novoAgendamentoInput)
         );
 
-        verify(agendamentoGateway, never()).haConflitoDeAgenda(agendamentoInputDataPassada.profissionalId(), agendamentoInputDataPassada.dataConsulta());
+        verify(agendamentoGateway, never()).haConflitoDeAgenda(novoAgendamentoInput.profissionalId(), novoAgendamentoInput.dataConsulta());
         verify(pacienteGateway, never()).buscarPorId(any(Long.class));
         verify(profissionalGateway, never()).buscarPorId(any(Long.class));
         verify(agendamentoGateway, never()).salvar(any(Agendamento.class));
@@ -148,17 +165,63 @@ class CriarAgendamentoImplTest {
     }
 
     @Test
-    void deveLancarExcecaoQuandoConflitoDeAgenda(){
-        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput();
+    void deveUsarFusoDoRelogioParaValidarData(){
+        var instant = Instant.parse("2026-11-22T10:45:00Z");
+        var relogioRecife = Clock.fixed(instant, ZoneId.of("America/Recife")); //hora Recife 07:45
+
+        var casoDeUso = new CriarAgendamentoImpl(agendamentoGateway,
+                pacienteGateway,
+                profissionalGateway,
+                relogioRecife);
+
+        //Recife - 07:45, UTC - 10:45 | Hora agendamento - 8:00 Recife
+        var dataAgendamento = LocalDateTime.of(2026,11,22,8,0);
+        var agendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
+        var paciente = AgendamentoFactory.paciente();
+        var profissional = AgendamentoFactory.medico();
+        var agendamento = AgendamentoFactory.agendamento(dataAgendamento);
+
+        when(agendamentoGateway.haConflitoDeAgenda(profissional.getId(), dataAgendamento))
+                .thenReturn(false);
+        when(pacienteGateway.buscarPorId(agendamentoInput.pacienteId()))
+                .thenReturn(Optional.of(paciente));
+        when(profissionalGateway.buscarPorId(agendamentoInput.profissionalId()))
+                .thenReturn(Optional.of(profissional));
+        when(agendamentoGateway.salvar(any(Agendamento.class)))
+                .thenReturn(agendamento);
+
+        var resultado = casoDeUso.criar(agendamentoInput);
+
+        assertEquals(dataAgendamento, resultado.dataConsulta());
+        verify(agendamentoGateway).salvar(any(Agendamento.class));
+    }
+
+    @Test
+    void deveRejeitarDataPassadaNoFusoUTC(){
+        //Fixed clock in setup - 10:45 UTC | Hora agendamento 08:00 UTC
+        var dataAgendamento = LocalDateTime.of(2026,11,22,8,00);
+        var agendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
+
+        assertThrows(
+                DataInvalidaException.class,
+                ()-> criarAgendamento.criar(agendamentoInput)
+        );
+
+        verifyNoInteractions(pacienteGateway, profissionalGateway, agendamentoGateway);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoConflitoDeAgenda() {
+        var dataAgendamento = LocalDateTime.now(clock).plusDays(7);
+        var novoAgendamentoInput = AgendamentoFactory.agendamentoInput(dataAgendamento);
         var idProfissional = novoAgendamentoInput.profissionalId();
-        var dataAgendamento = novoAgendamentoInput.dataConsulta();
 
         when(agendamentoGateway.haConflitoDeAgenda(idProfissional, dataAgendamento))
                 .thenReturn(true);
 
         assertThrows(
                 ConflitoAgendamentoException.class,
-                ()->criarAgendamento.criar(novoAgendamentoInput)
+                () -> criarAgendamento.criar(novoAgendamentoInput)
         );
 
         verify(agendamentoGateway).haConflitoDeAgenda(idProfissional, dataAgendamento);

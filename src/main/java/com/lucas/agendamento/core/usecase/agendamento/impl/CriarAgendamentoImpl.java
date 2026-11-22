@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -24,6 +25,7 @@ public class CriarAgendamentoImpl implements CriarAgendamento {
     private final AgendamentoGateway agendamentoGateway;
     private final PacienteGateway pacienteGateway;
     private final ProfissionalGateway profissionalGateway;
+    private final Clock clock;
 
     @Override
     public AgendamentoOutput criar(NovoAgendamentoInput input) {
@@ -43,7 +45,7 @@ public class CriarAgendamentoImpl implements CriarAgendamento {
     }
 
     private void validaDataAgendamento(Long profissionalId, LocalDateTime dataAgendamento) {
-        var dataAtual = LocalDateTime.now();
+        var dataAtual = LocalDateTime.now(clock);
         if(!dataAgendamento.isAfter(dataAtual)) {
             throw new DataInvalidaException("Data e hora do agendamento devem ser superiores a data e hora atuais");
         }
